@@ -1,26 +1,9 @@
 import React from 'react';
-import { SearchResult } from '../models/SearchResult';
 import TableComponent from '../component/Tablecomponent';
+import { useSearchStorage } from '../component/useSearchStorage';
 const History: React.FC = () => {
-    const [history, setHistory] = React.useState<SearchResult[]>([]);
-    // Load search history from local storage on component mount
-    React.useEffect(() => {
-        const storedHistory = localStorage.getItem('searchHistory');
-        if(storedHistory) 
-        {
-            let searchResult:SearchResult[] = [];
-            let historyData = JSON.parse(storedHistory);
-            historyData.forEach((element: SearchResult) => {
-                searchResult.push(element);
-            });
-            setHistory(searchResult);
-        }
-    }, []);
-
-    const clearSearch = () =>{
-        localStorage.clear();
-        setHistory([]);
-    }
+    const {history, update, reset} = useSearchStorage();
+    console.log(history);
 
     return (
         <div>
@@ -31,7 +14,7 @@ const History: React.FC = () => {
                 <TableComponent data={history}></TableComponent>
                 : <p>No history found</p>
             }
-            <button onClick={clearSearch}>Clear Search history</button>
+            <button onClick={reset}>Clear Search history</button>
 
         </div>
     );

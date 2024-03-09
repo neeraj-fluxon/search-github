@@ -2,11 +2,13 @@
 import React from 'react';
 import { SearchResult } from '../models/SearchResult';
 import '../App.css';
+import { useSearchStorage } from '../component/useSearchStorage';
 
 const Dashboard: React.FC = () => {
     const [searchTerm, setSearchTerm] = React.useState('');
     const [users, setUsers] = React.useState<any[]>([]);
-    const [history, setHistory] = React.useState<SearchResult[]>([]);
+    //const [history, setHistory] = React.useState<SearchResult[]>([]);
+    const { history, update, reset} = useSearchStorage();
     const handleSearch = async () => {
         try {
             const response = await fetch(`https://api.github.com/search/users?q=${searchTerm}`);
@@ -15,25 +17,12 @@ const Dashboard: React.FC = () => {
             // Save search term to local storage
             if (searchTerm) {
                 const updatedHistory = history.concat({key: searchTerm, result: data});
-                setHistory(updatedHistory);
-                localStorage.setItem('searchHistory', JSON.stringify(updatedHistory));
+                update(updatedHistory);
             }
         } catch (error) {
             console.error('Error fetching users:', error);
         }
     };
-    React.useEffect(() => {
-        const storedHistory = localStorage.getItem('searchHistory');
-        if(storedHistory) 
-        {
-            let searchResult:SearchResult[] = [];
-            let historyData = JSON.parse(storedHistory);
-            historyData.forEach((element: SearchResult) => {
-                searchResult.push(element);
-            });
-            setHistory(searchResult);
-        }
-    }, []);
   return (
     <div className='Search-container'>
       <h1>Search Github User</h1>
